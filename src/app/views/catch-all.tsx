@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 export default function Component() {
   return (
     <main className="flex min-h-dvh w-full flex-col items-center justify-center">
@@ -6,10 +7,9 @@ export default function Component() {
           Page Not Found
         </h1>
 
-        <p className="text-center text-lg/normal text-balance">
-          We're sorry, but an unexpected error has occurred. Please try again
-          later or contact support if the issue persists.
-        </p>
+        <Link to="/" className="mt-4 hover:underline">
+          Go back to the home page
+        </Link>
       </div>
     </main>
   );

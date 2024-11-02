@@ -10,6 +10,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const location = useLocation();
+
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="flex flex-col items-center gap-16 [&>a]:text-blue-500 [&>a]:hover:text-blue-600 [&>a]:hover:underline">

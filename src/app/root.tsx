@@ -1,63 +1,64 @@
-import type { ReactNode } from "react";
+import { motion } from "framer-motion";
+import type { ClientLoaderFunction, LinksFunction } from "react-router";
 import {
-  Link,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useRouteError,
+  redirect,
 } from "react-router";
-import "./root.css";
+import { Loading } from "~/app/components/ui/loading";
+import "~/app/root.css";
+import { script } from "~/app/theme-script";
+
+const loadFont = (href: string) =>
+  ({ rel: "preload", href, as: "font", type: "font/woff" }) as const;
+
+export const links: LinksFunction = () => [
+  loadFont("/static/fonts/GeistVF.woff"),
+  loadFont("/static/fonts/GeistMonoVF.woff"),
+];
+
+export const clientLoader: ClientLoaderFunction = async (args) => {
+  const url = new URL(args.request.url);
+  if (url.pathname === "/") {
+    return redirect("/home");
+  }
+};
 
 export default function App() {
   return <Outlet />;
 }
 
-export function ErrorBoundary() {
-  let error = useRouteError();
-
-  let title =
-    error instanceof Error ? error.message : "Oops, something went wrong!";
-
-  return (
-    <main className="flex min-h-dvh w-full flex-col items-center justify-center">
-      <div className="flex max-w-lg flex-col items-center justify-center gap-y-6">
-        <h1 className="text-center text-4xl/none font-semibold text-balance">
-          {title}
-        </h1>
-
-        <p className="text-center text-lg/normal text-balance">
-          We're sorry, but an unexpected error has occurred. Please try again
-          later or contact support if the issue persists.
-        </p>
-
-        <Link to="/">Go to Homepage</Link>
-
-        {error instanceof Error && error.stack ? (
-          <pre className="mt-4 w-full overflow-x-auto rounded-xl bg-black p-3 text-white">
-            <code>{JSON.stringify(error.stack, null, "\t")}</code>
-          </pre>
-        ) : null}
-      </div>
-    </main>
-  );
+export function HydrateFallback() {
+  return <Loading />;
 }
 
-export function Layout({ children }: { children: ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className="bg-white text-black dark:bg-black dark:text-white"
-    >
+    <html lang="en" className="bg-black font-mono text-white">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: `(${script.toString()})()` }}
+        />
+
         <Meta />
         <Links />
       </head>
-      <body className="min-h-dvh w-screen">
-        {children}
+      <body>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          {children}
+        </motion.div>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -1,12 +1,12 @@
-import type { MetaFunction } from "react-router";
+// import type { MetaFunction } from "react-router";
 import { Link, useLocation } from "react-router";
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Index Page" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
-};
+// export const meta: MetaFunction = () => {
+//   return [
+//     { title: "Index Page" },
+//     { name: "description", content: "Welcome to React Router!" },
+//   ];
+// };
 
 export default function Index() {
   const location = useLocation();

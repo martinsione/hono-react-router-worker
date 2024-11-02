@@ -9,22 +9,29 @@
     "dev": "react-router dev",
     "build": "react-router build",
     "deploy": "react-router build && wrangler deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "format": "prettier --write src --ignore-path=.gitignore --cache"
+    "typegen": "react-router typegen && wrangler types --env-interface CloudflareBindings",
+    "format": "prettier --write src --ignore-path=.gitignore --cache",
+    "db:migrate": "dotenv -e .env -- wrangler d1 migrations apply DB",
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts"
   },
   "prettier": {
     "plugins": [
       "prettier-plugin-organize-imports",
       "prettier-plugin-tailwindcss"
-    ]
+    ],
+    "organizeImportsSkipDestructiveCodeActions": true
   },
   "dependencies": {
     "@react-router/node": "7.0.0-pre.4",
+    "drizzle-orm": "^0.36.0",
+    "drizzle-zod": "^0.5.1",
+    "framer-motion": "^11.11.11",
     "hono": "^4.6.8",
     "isbot": "^5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router": "7.0.0-pre.4"
+    "react-router": "7.0.0-pre.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241022.0",
@@ -33,6 +40,8 @@
     "@tailwindcss/vite": "4.0.0-alpha.31",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "dotenv-cli": "^7.4.2",
+    "drizzle-kit": "^0.27.1",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.8",

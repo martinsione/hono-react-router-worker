@@ -1,26 +1,29 @@
+import hono, { defaultOptions } from "@hono/vite-dev-server";
+import adapter from "@hono/vite-dev-server/cloudflare";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
-import hono, {
-  defaultOptions as honoDefaultOptions,
-} from "@hono/vite-dev-server";
-import adapter from "@hono/vite-dev-server/cloudflare";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [
-    tailwindcss(),
-    tsconfigPaths(),
     hono({
       adapter,
       entry: "src/server/index.ts",
-      exclude: [/^\/(src\/app)\/.+/, ...honoDefaultOptions.exclude],
+      exclude: [/^\/(src\/app)\/.+/, ...defaultOptions.exclude],
       injectClientScript: false,
+      env: {
+        NODE_ENV: "development",
+      },
     }),
     reactRouter({
-      ssr: false,
-      prerender: true,
       appDirectory: "src/app",
+      ssr: false,
+      prerender: async (args) => {
+        return args.getStaticPaths();
+      },
     }),
+    tailwindcss(),
+    tsconfigPaths(),
   ],
 });
