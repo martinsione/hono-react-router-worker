@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "lib": ["ES2022", "dom", "dom.iterable"],
+    "module": "esnext",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "plugins": [{ "name": "@react-router/dev" }],
+    "rootDirs": [".", "./.react-router/types"],
+    "types": [
+      "@cloudflare/workers-types/2023-07-01",
+      "@react-router/node",
+      "vite/client"
+    ]
+  },
+  "include": [".", ".react-router/types/**/*"],
+  "exclude": ["node_modules"]
+}
