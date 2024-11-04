@@ -1,42 +1,38 @@
-import { drizzle, type DrizzleD1Database } from "drizzle-orm/d1";
-import { Hono } from "hono";
-import schema from "~/db/schema";
+import { drizzle } from "drizzle-orm/d1";
+import { Hono, MiddlewareHandler } from "hono";
+import { poweredBy } from "hono/powered-by";
+import * as schema from "~/db/schema";
+import { authMiddleware, authRoute } from "~/server/auth";
+import { HonoEnv } from "~/server/utils/env";
 
-const app = new Hono<{
-  Bindings: CloudflareBindings;
-  Variables: {
-    db: DrizzleD1Database<typeof schema>;
+// app.use(
+//   "*",
+//   bearerAuth({
+//     verifyToken: async (token, c) => {
+//       const db = c.get("db");
+//       const user = await db.query.users.findFirst({
+//         where: eq(schema.users.id, token),
+//       });
+//       return !!user;
+//     },
+//   }),
+// );
+
+function init(): MiddlewareHandler<HonoEnv> {
+  return async (c, next) => {
+    c.set("db", drizzle(c.env.DB, { schema }));
+    return next();
   };
-}>();
+}
 
-app.use("*", (c, next) => {
-  c.res.headers.set("x-hono", "true");
-  return next();
-});
+const app = new Hono<HonoEnv>()
+  .use("*", init())
+  .use("*", poweredBy())
+  .use("*", authMiddleware())
+  .get("/health", (c) => c.json({ message: "OK" }))
+  .route("/auth", authRoute);
 
-app.use("*", async (c, next) => {
-  c.set("db", drizzle(c.env.DB, { schema }));
-  return next();
-});
-
-app.get("/ping", (c) => {
-  return c.json({ message: "hi" });
-});
-
-app.get("/api/users", async (c) => {
-  const users = await c.get("db").query.users.findMany();
-  return c.json(users);
-});
-
-app.post("/api/users", async (c) => {
-  const db = c.get("db");
-  const user = await db.insert(schema.users).values({
-    id: crypto.randomUUID(),
-    email: "test@test.com",
-    password: "password",
-  });
-  return c.json(user);
-});
+export type AppType = typeof app;
 
 export default {
   fetch: async (

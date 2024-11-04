@@ -1,5 +1,6 @@
 import type { MetaFunction } from "react-router";
 import { Link, useLocation } from "react-router";
+import { Button } from "~/app/components/ui/button";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,6 +13,7 @@ export default function Index() {
   const location = useLocation();
   return (
     <div className="flex h-screen items-center justify-center">
+      <Button>Click me</Button>
       <div className="flex flex-col items-center gap-16 [&>a]:text-blue-500 [&>a]:hover:text-blue-600 [&>a]:hover:underline">
         {/* <h1 className="leading text-2xl font-medium text-gray-800 dark:text-gray-100">
           Welcome to <span className="font-black">{location.pathname}</span>

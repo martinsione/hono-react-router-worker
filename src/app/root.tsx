@@ -1,4 +1,16 @@
-import { motion } from "framer-motion";
+import {
+  SessionProvider,
+  authConfigManager,
+  getSession,
+  useSession,
+} from "@hono/auth-js/react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { ClientLoaderFunction, LinksFunction } from "react-router";
 import {
   Links,
@@ -12,6 +24,10 @@ import { Loading } from "~/app/components/ui/loading";
 import "~/app/root.css";
 import { script } from "~/app/theme-script";
 
+authConfigManager.setConfig({
+  basePath: "/auth",
+});
+
 const loadFont = (href: string) =>
   ({ rel: "preload", href, as: "font", type: "font/woff" }) as const;
 
@@ -22,6 +38,13 @@ export const links: LinksFunction = () => [
 
 export const clientLoader: ClientLoaderFunction = async (args) => {
   const url = new URL(args.request.url);
+
+  const session = await getSession();
+  const AUTH_ROUTES = ["/sign-up", "/sign-in"];
+  if (!session && !AUTH_ROUTES.includes(url.pathname)) {
+    return redirect("/sign-up");
+  }
+
   if (url.pathname === "/") {
     return redirect("/home");
   }
@@ -35,9 +58,15 @@ export function HydrateFallback() {
   return <Loading />;
 }
 
+const queryClient = new QueryClient();
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-black font-mono text-white">
+    <html
+      lang="en"
+      className="bg-background text-foreground font-mono"
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -50,15 +79,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="absolute inset-0 flex items-center justify-center"
-        >
-          {children}
-        </motion.div>
+      <body suppressHydrationWarning>
+        <div className="fade-in absolute inset-0 flex items-center justify-center">
+          <SessionProvider>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </SessionProvider>
+        </div>
         <ScrollRestoration />
         <Scripts />
       </body>
