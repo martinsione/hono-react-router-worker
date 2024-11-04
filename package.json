@@ -12,7 +12,8 @@
     "typegen": "react-router typegen && wrangler types --env-interface CloudflareBindings",
     "format": "prettier --write src --ignore-path=.gitignore --cache",
     "db:migrate": "dotenv -e .env -- wrangler d1 migrations apply DB",
-    "db:generate": "drizzle-kit generate --config drizzle.config.ts"
+    "db:generate": "drizzle-kit generate --config drizzle.config.ts",
+    "db:push": "dotenv -e .env -- drizzle-kit migrate --config drizzle.config.ts"
   },
   "prettier": {
     "plugins": [
