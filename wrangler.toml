@@ -24,7 +24,7 @@ enabled = true
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/workers/configuration/secrets/
 [vars]
-ENVIRONMENT = "production"
+ENVIRONMENT = "development"
 AUTH_SECRET = "supersecret"
 
 # Bind the Workers AI model catalog. Run machine learning models, powered by serverless GPUs, on Cloudflare’s global network

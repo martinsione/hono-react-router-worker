@@ -37,10 +37,10 @@ export type AppType = typeof app;
 export default {
   fetch: async (
     req: Request,
-    env: CloudflareBindings & { NODE_ENV?: string },
+    env: CloudflareBindings,
     ctx: ExecutionContext,
   ) => {
-    console.log({ path: new URL(req.url).pathname, city: req.cf?.city });
+    console.log({ path: new URL(req.url).pathname, city: req.cf?.city, env });
 
     const res = await app.fetch(req, env, ctx);
     if (res.status === 404) {
@@ -57,17 +57,8 @@ export default {
         // viteDevServer.ssrLoadModule("virtual:react-router/server-build"),
         "development",
       );
-      return handler(req, {
-        context: {
-          cloudflare: {
-            caches: globalThis.caches ? caches : undefined,
-            cf: req.cf,
-            ctx,
-            env,
-          },
-        },
-        request: req,
-      });
+
+      return handler(req, { req, env, ctx });
     }
     return res;
   },

@@ -10,13 +10,12 @@ export default defineConfig({
   plugins: [
     hono({
       adapter,
-      env: { ENVIRONMENT: "development" },
       entry: "src/server/index.ts",
       exclude: [/^\/(src\/app)\/.+/, ...defaultOptions.exclude],
       injectClientScript: false,
     }),
     cloudflareDevProxy(),
-    reactRouter({ appDirectory: "src/app", prerender: true }),
+    reactRouter({ appDirectory: "src/app", prerender: true, ssr: false }),
     tailwindcss(),
     tsconfigPaths(),
   ],
