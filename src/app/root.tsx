@@ -5,7 +5,7 @@ import {
   useSession,
 } from "@hono/auth-js/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { LinksFunction } from "react-router";
+import type { ClientLoaderFunction, LinksFunction } from "react-router";
 import {
   Links,
   Meta,
@@ -28,17 +28,10 @@ export const links: LinksFunction = () => [
   loadFont("/static/fonts/GeistMonoVF.woff"),
 ];
 
-// export const clientLoader: ClientLoaderFunction = async (args) => {
-//   const url = new URL(args.request.url);
-//   const session = await getSession();
-//   const AUTH_ROUTES = ["/sign-up", "/sign-in"];
-//   if (!session && !AUTH_ROUTES.includes(url.pathname)) {
-//     return redirect("/sign-up");
-//   }
-//   if (url.pathname === "/") {
-//     return redirect("/home");
-//   }
-// };
+/**
+ * For some reason, without a `clientLoader` there is a CSS FOUC.
+ */
+export const clientLoader: ClientLoaderFunction = async (args) => {};
 
 export default function App() {
   return <Outlet />;
