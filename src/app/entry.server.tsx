@@ -1,5 +1,7 @@
 import { isbot } from "isbot";
-import { renderToReadableStream } from "react-dom/server";
+import type { RenderToReadableStreamOptions } from "react-dom/server";
+// @ts-expect-error - Not typed
+import { renderToReadableStream } from "react-dom/server.browser";
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 

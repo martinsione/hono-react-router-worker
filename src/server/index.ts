@@ -40,8 +40,6 @@ export default {
     env: CloudflareBindings,
     ctx: ExecutionContext,
   ) => {
-    console.log({ path: new URL(req.url).pathname, city: req.cf?.city, env });
-
     const res = await app.fetch(req, env, ctx);
     if (res.status === 404) {
       /**
