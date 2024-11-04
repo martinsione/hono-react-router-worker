@@ -48,12 +48,13 @@ export default {
        * Right now service binding is not supported in dev mode
        * @see https://developers.cloudflare.com/workers/static-assets/#limitations
        */
-      if (env.NODE_ENV !== "development") return env.ASSETS.fetch(req);
+      if (env.ENVIRONMENT === "production") return env.ASSETS.fetch(req);
 
       const { createRequestHandler } = await import("react-router");
       const handler = createRequestHandler(
         // @ts-expect-error - Not typed
         await import("virtual:react-router/server-build").catch(() => {}),
+        // viteDevServer.ssrLoadModule("virtual:react-router/server-build"),
         "development",
       );
       return handler(req, {

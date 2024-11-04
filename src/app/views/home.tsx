@@ -1,5 +1,6 @@
-import type { MetaFunction } from "react-router";
+import type { LoaderFunction, MetaFunction } from "react-router";
 import { Link, useLocation } from "react-router";
+import type * as Route from "types:views/+types.home";
 import { Button } from "~/app/components/ui/button";
 
 export const meta: MetaFunction = () => {
@@ -9,7 +10,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Index() {
+// export const loader = async (args: Route.LoaderArgs) => {
+//   return {
+//     message: "Hello from loader",
+//   };
+// };
+
+export default function Index({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
   return (
     <div className="flex h-screen items-center justify-center">
