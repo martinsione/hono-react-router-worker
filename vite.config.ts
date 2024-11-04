@@ -19,9 +19,4 @@ export default defineConfig({
     tailwindcss(),
     tsconfigPaths(),
   ],
-  resolve: {
-    alias: {
-      "react-dom/server": "react-dom/server.browser",
-    },
-  },
 });
