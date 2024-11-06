@@ -26,7 +26,7 @@ export default async function handleRequest(
         console.error(error);
         status = 500;
       },
-    },
+    } satisfies RenderToReadableStreamOptions,
   );
 
   const userAgent = req.headers.get("user-agent");

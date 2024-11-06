@@ -179,14 +179,15 @@ const useForm = <
   TOut extends FieldValues,
   TDef extends ZodTypeDef,
   TIn extends FieldValues,
->(
-  props: Omit<UseFormProps<TIn>, "resolver"> & {
-    schema: ZodType<TOut, TDef, TIn>;
-  },
-) => {
+>({
+  schema,
+  ...props
+}: Omit<UseFormProps<TIn>, "resolver"> & {
+  schema: ZodType<TOut, TDef, TIn>;
+}) => {
   const form = __useForm<TIn, unknown, TOut>({
     ...props,
-    resolver: zodResolver(props.schema, undefined),
+    resolver: zodResolver(schema, undefined),
   });
 
   return form;

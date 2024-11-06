@@ -16,7 +16,7 @@
     "rootDirs": [".", "./.react-router/types"],
     "types": [
       "@cloudflare/workers-types/2023-07-01",
-      "@react-router/node",
+      "@react-router/cloudflare",
       "vite/client"
     ]
   },

@@ -3,7 +3,7 @@ import type { AppType } from "~/server";
 
 import { signIn } from "@hono/auth-js/react";
 import { useMutation } from "@tanstack/react-query";
-import { Link, redirect } from "react-router";
+import { Link, redirect, useNavigate } from "react-router";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/app/components/ui/button";
 import {
@@ -29,12 +29,14 @@ const EmailPasswordSchema = z.object({
 
 function UserAuthForm() {
   const form = useForm({
+    values: { email: "", password: "" },
     schema: EmailPasswordSchema,
   });
 
+  const navigate = useNavigate();
   const signup = useMutation({
     mutationFn: async (data: z.infer<typeof EmailPasswordSchema>) => {
-      return await client.auth.signup.$post({ json: data });
+      return await client.api.auth.signup.$post({ json: data });
     },
     onSuccess: async (data, variables) => {
       const { email, password } = variables;
@@ -43,10 +45,10 @@ function UserAuthForm() {
         password,
         redirect: false,
       });
-      if (res?.error) {
-        console.log("error", res.error);
+      if (res?.error || !res?.ok) {
+        throw new Error("Invalid credentials");
       }
-      return redirect("/");
+      navigate("/");
     },
   });
 
@@ -127,12 +129,12 @@ function UserAuthForm() {
       </div>
 
       <Button variant="outline" type="button" disabled>
-        {signup.isPending ? (
+        {/* {signup.isPending ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
           <Icons.gitHub className="mr-2 h-4 w-4" />
-        )}{" "}
-        GitHub
+        )}{" "} */}
+        <Icons.gitHub className="mr-2 h-4 w-4" /> GitHub
       </Button>
     </div>
   );

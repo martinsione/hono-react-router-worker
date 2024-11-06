@@ -28,8 +28,8 @@ async function hashPassword(string: string) {
   return bcrypt.hash(await sha256(string), SALT_ROUNDS);
 }
 
-async function comparePassword(plainText: string, hash: string) {
-  return bcrypt.compare(await sha256(plainText), hash);
+async function comparePassword(string: string, hash: string) {
+  return bcrypt.compare(await sha256(string), hash);
 }
 
 const EmailPasswordSchema = z.object({
@@ -39,9 +39,8 @@ const EmailPasswordSchema = z.object({
 
 export const authMiddleware = () =>
   initAuthConfig((c: Context<HonoEnv>) => {
-    const url = new URL(c.req.url);
     // @ts-expect-error - Not typed.
-    c.env.AUTH_URL = url.origin + "/auth";
+    c.env.AUTH_URL = new URL(c.req.url).origin + "/api/auth";
 
     return {
       adapter: DrizzleAdapter(c.get("db")),

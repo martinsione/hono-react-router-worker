@@ -1,22 +1,11 @@
+import { getAuthUser } from "@hono/auth-js";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono, MiddlewareHandler } from "hono";
 import { poweredBy } from "hono/powered-by";
 import * as schema from "~/db/schema";
 import { authMiddleware, authRoute } from "~/server/auth";
 import { HonoEnv } from "~/server/utils/env";
-
-// app.use(
-//   "*",
-//   bearerAuth({
-//     verifyToken: async (token, c) => {
-//       const db = c.get("db");
-//       const user = await db.query.users.findFirst({
-//         where: eq(schema.users.id, token),
-//       });
-//       return !!user;
-//     },
-//   }),
-// );
+import { reactRouter } from "./react-router";
 
 function init(): MiddlewareHandler<HonoEnv> {
   return async (c, next) => {
@@ -29,8 +18,18 @@ const app = new Hono<HonoEnv>()
   .use("*", init())
   .use("*", poweredBy())
   .use("*", authMiddleware())
-  .get("/health", (c) => c.json({ message: "OK" }))
-  .route("/auth", authRoute);
+  .get("/api/health", (c) => c.json({ message: "OK" }))
+  .route("/api/auth", authRoute)
+  .get("*", async (c, next) => {
+    const AUTH_ROUTES = ["/sign-in", "/sign-up"];
+    const session = await getAuthUser(c);
+    const url = new URL(c.req.url);
+    if (!session && !AUTH_ROUTES.includes(url.pathname)) {
+      return c.redirect("/sign-in");
+    }
+    return next();
+  })
+  .get("*", reactRouter());
 
 export type AppType = typeof app;
 
@@ -40,24 +39,6 @@ export default {
     env: CloudflareBindings,
     ctx: ExecutionContext,
   ) => {
-    const res = await app.fetch(req, env, ctx);
-    if (res.status === 404) {
-      /**
-       * Right now service binding is not supported in dev mode
-       * @see https://developers.cloudflare.com/workers/static-assets/#limitations
-       */
-      if (env.ENVIRONMENT === "production") return env.ASSETS.fetch(req);
-
-      const { createRequestHandler } = await import("react-router");
-      const handler = createRequestHandler(
-        // @ts-expect-error - Not typed
-        await import("virtual:react-router/server-build").catch(() => {}),
-        // viteDevServer.ssrLoadModule("virtual:react-router/server-build"),
-        "development",
-      );
-
-      return handler(req, { req, env, ctx });
-    }
-    return res;
+    return app.fetch(req, env, ctx);
   },
 };

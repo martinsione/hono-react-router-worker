@@ -15,7 +15,9 @@ export default defineConfig({
       injectClientScript: false,
     }),
     cloudflareDevProxy(),
-    reactRouter({ appDirectory: "src/app", prerender: true, ssr: false }),
+    reactRouter({
+      appDirectory: "src/app",
+    }),
     tailwindcss(),
     tsconfigPaths(),
   ],
