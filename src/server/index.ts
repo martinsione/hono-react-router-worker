@@ -21,16 +21,19 @@ const app = new Hono<HonoEnv>()
   .get("/api/health", (c) => c.json({ message: "OK" }))
   .route("/api/auth", authRoute)
   .get("*", async (c, next) => {
-    const AUTH_ROUTES = ["/sign-in", "/sign-up"];
+    const PUBLIC_ROUTES = [
+      "/__manifest", // react router internal
+      "/sign-in",
+      "/sign-up",
+    ];
+
     const session = await getAuthUser(c);
-    const url = new URL(c.req.url);
-    if (!session && !AUTH_ROUTES.includes(url.pathname)) {
-      return c.redirect("/sign-in");
-    }
+    const isPublicRoute = PUBLIC_ROUTES.includes(new URL(c.req.url).pathname);
+
+    if (!session && !isPublicRoute) return c.redirect("/sign-in");
     return next();
   })
   .get("*", reactRouter());
-
 export type AppType = typeof app;
 
 export default {
